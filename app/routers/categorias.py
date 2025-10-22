@@ -25,7 +25,13 @@ def crear_categoria(categoria: CategoriaCreate, db: Session = Depends(get_db)):
 # Listar todas las categorías
 @router.get("/", response_model=list[CategoriaOut])
 def listar_categorias(db: Session = Depends(get_db)):
-    return db.query(Categoria).all()
+    return db.query(Categoria).filter(Categoria.estado == "activo").all()
+
+# inactivos
+@router.get("/inactivos", response_model=list[CategoriaOut])
+def listar_productos_inactivos(db: Session = Depends(get_db)):
+    return db.query(Categoria).filter(Categoria.estado == "inactivo").all()
+
 
 # Buscar categoría por ID
 @router.get("/{id}", response_model=CategoriaOut)
@@ -41,6 +47,6 @@ def eliminar_categoria(id: int, db: Session = Depends(get_db)):
     categoria = db.query(Categoria).filter(Categoria.id == id).first()
     if not categoria:
         raise HTTPException(status_code=404, detail="Categoría no encontrada")
-    db.delete(categoria)
+    categoria.estado = "inactivo"
     db.commit()
     return {"mensaje": "Categoría eliminada correctamente"}

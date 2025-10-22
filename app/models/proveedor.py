@@ -10,6 +10,9 @@ class Proveedor(Base):
     contacto = Column(String)
     telefono = Column(String)
     ciudad = Column(String)
+    estado = Column(String, default="activo")
 
     # Relación 1:N con productos
     productos = relationship("Producto", back_populates="proveedor_relacion")
+    
+    

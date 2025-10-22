@@ -10,3 +10,4 @@ class Categoria(Base):
 
     # Relación 1:N con productos
     productos = relationship("Producto", back_populates="categoria_relacion")
+    estado = Column(String, default="activo")

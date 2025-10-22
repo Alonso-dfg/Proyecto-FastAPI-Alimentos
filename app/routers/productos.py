@@ -27,7 +27,12 @@ def crear_producto(producto: ProductoCreate, db: Session = Depends(get_db)):
 # Listar todos los productos
 @router.get("/", response_model=list[ProductoOut])
 def listar_productos(db: Session = Depends(get_db)):
-    return db.query(Producto).all()
+    return db.query(Producto).filter(Producto.estado == "activo").all()
+
+# Listar productos inactivos
+@router.get("/inactivos", response_model=list[ProductoOut])
+def listar_productos_inactivos(db: Session = Depends(get_db)):
+    return db.query(Producto).filter(Producto.estado == "inactivo").all()
 
 # Buscar producto por ID
 @router.get("/{id}", response_model=ProductoOut)
@@ -55,7 +60,7 @@ def eliminar_producto(id: int, db: Session = Depends(get_db)):
     producto = db.query(Producto).filter(Producto.id == id).first()
     if not producto:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
-    db.delete(producto)
+    producto.estado = "inactivo"
     db.commit()
     return {"mensaje": "Producto eliminado correctamente"}
 

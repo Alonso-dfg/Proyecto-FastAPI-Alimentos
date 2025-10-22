@@ -17,7 +17,12 @@ def crear_proveedor(proveedor: ProveedorCreate, db: Session = Depends(get_db)):
 
 @router.get("/", response_model=List[ProveedorOut])
 def listar_proveedores(db: Session = Depends(get_db)):
-    return db.query(Proveedor).all()
+    return db.query(Proveedor).filter(Proveedor.estado == "activo").all()
+
+@router.get("/inactivos", response_model=list[ProveedorOut])
+def listar_proveedores_inactivos(db: Session = Depends(get_db)):
+    return db.query(Proveedor).filter(Proveedor.estado == "inactivo").all()
+
 
 @router.get("/{proveedor_id}", response_model=ProveedorOut)
 def obtener_proveedor(proveedor_id: int, db: Session = Depends(get_db)):
@@ -45,6 +50,6 @@ def eliminar_proveedor(proveedor_id: int, db: Session = Depends(get_db)):
     if not proveedor:
         raise HTTPException(status_code=404, detail="Proveedor no encontrado")
 
-    db.delete(proveedor)
+    proveedor.estado = "inactivo"
     db.commit()
     return {"mensaje": "Proveedor eliminado correctamente"}

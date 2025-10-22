@@ -23,3 +23,5 @@ class Producto(Base):
     # Relación con usuario
     usuario_id = Column(Integer, ForeignKey("usuarios.id"))
     usuario_relacion = relationship("Usuario", back_populates="productos")
+
+    estado = Column(String, default="activo")
