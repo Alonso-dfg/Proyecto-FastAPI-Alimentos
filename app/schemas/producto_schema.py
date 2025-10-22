@@ -1,10 +1,11 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class ProductoBase(BaseModel):
     nombre: str
-    categoria_id: float
-    proveedor_id: float
-    usuario_id: float
+    categoria_id: Optional[float] = None  # Ahora puede ser None
+    proveedor_id: Optional[float] = None  # Ahora puede ser None
+    usuario_id: Optional[float] = None    # Ahora puede ser None
     precio: float
     ciudad: str
     fuente: str
