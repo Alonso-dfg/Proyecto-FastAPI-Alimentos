@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models.producto import Producto  
@@ -14,6 +14,36 @@ def get_db():
         yield db
     finally:
         db.close()
+
+# Busqueda por nombre ciudad y ID categoria
+@router.get("/buscar")
+def buscar_productos(
+    nombre: str | None = Query(None, description="Buscar por nombre del producto"),
+    ciudad: str | None = Query(None, description="Buscar por ciudad"),
+    categoria_id: int | None = Query(None, description="Buscar por ID de categoría"),
+    db: Session = Depends(get_db)
+):
+    
+    query = db.query(Producto)
+
+   
+    if nombre:
+        query = query.filter(Producto.nombre.ilike(f"%{nombre}%"))  
+    if ciudad:
+        query = query.filter(Producto.ciudad.ilike(f"%{ciudad}%"))
+    if categoria_id:
+        query = query.filter(Producto.categoria_id == categoria_id)
+
+    productos = query.all()
+
+    if not productos:
+        raise HTTPException(status_code=404, detail="No se encontraron productos con esos criterios")
+
+    return {
+        "cantidad": len(productos),
+        "productos": productos
+    }
+
 
 # Crear producto
 @router.post("/", response_model=ProductoOut)
